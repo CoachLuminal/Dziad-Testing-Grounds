@@ -10,15 +10,19 @@ public class Interaction : MonoBehaviour
     [SerializeField] private float interactionRange = 5f;
 
     [Header("RayCast")]
-    [SerializeField] private float rayCastLenght = 1f;
+    [SerializeField] private float rayCastLenght = 5f;
 
-    private Camera playerCamera;
+    [Header("Camera")]
+    [SerializeField] private Camera playerCamera;
 
-    
+    [Header("MaskLayer")]
+    [SerializeField] private LayerMask Layer;
+
+
 
     void Start()
     {
-        playerCamera = GetComponentInChildren<Camera>();
+        playerCamera = Camera.main;
     }
 
 
@@ -34,13 +38,15 @@ public class Interaction : MonoBehaviour
     void InteractCasting()
     {
 
+        Debug.DrawRay(playerCamera.transform.position, playerCamera.transform.forward * rayCastLenght, Color.red, rayCastLenght);
+
         RaycastHit hit;
         
-        DebugInteractCasting(default);
 
-        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, rayCastLenght))
+        if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, rayCastLenght, Layer))
             {
                 Debug.Log("Hit " + hit.transform.name);
+                
                 Interactable interactable = hit.transform.GetComponent<Interactable>();
                 if (interactable != null)
                 {
@@ -48,10 +54,8 @@ public class Interaction : MonoBehaviour
                 }
             }
 
+        
+
     }
 
-    void DebugInteractCasting(RaycastHit hit)
-    {
-        Debug.DrawRay(playerCamera.transform.position, playerCamera.transform.forward, Color.blueViolet, rayCastLenght);
-    }
 }
