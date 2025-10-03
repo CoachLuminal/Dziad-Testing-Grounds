@@ -48,10 +48,13 @@ public class Interaction : MonoBehaviour
                 Debug.Log("Hit " + hit.transform.name);
                 
                 Interactable interactable = hit.transform.GetComponent<Interactable>();
-                if (interactable != null)
+                PlayerInventory playerInventory = GetComponent<PlayerInventory>();
+            if (interactable != null)
                 {
-                    interactable.Interact();
-                }
+                    interactable.Interact(null);
+                    playerInventory.InventoryAddItem(interactable);
+
+            }
             }
 
         
