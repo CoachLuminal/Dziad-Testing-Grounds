@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class PlayerInventory : MonoBehaviour
@@ -16,7 +17,7 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] private List<Interactable> inventoryItems = new List<Interactable>();
 
     [Header("Inventory Bool")]
-    [SerializeField] private bool isInventoryOpen = false;
+    [SerializeField] public bool isInventoryOpen = false;
 
     [Header("Inventory UI")]
     [SerializeField] private GameObject inventoryUI;
@@ -34,14 +35,18 @@ public class PlayerInventory : MonoBehaviour
     
     void OpenInventory()
     {
+        Cursor.lockState = isInventoryOpen ? CursorLockMode.None : CursorLockMode.Locked;
+
         if (Input.GetKeyDown(KeyCode.I))
         {
             isInventoryOpen = !isInventoryOpen;
             inventoryUI.SetActive(isInventoryOpen);
             Debug.Log(isInventoryOpen ? "Inventory Opened" : "Inventory Closed");
+            
             if (isInventoryOpen)
             {
                 DisplayInventoryStash();
+                
             }
         }
     }
@@ -54,6 +59,8 @@ public class PlayerInventory : MonoBehaviour
             stashInfo += item.itemID + " - " + item.itemName + " (Weight: " + item.itemWeight + ")\n";
         }
         stashText.text = stashInfo;
+
+        
     }
 
     public void InventoryAddItem(Interactable item)
@@ -67,6 +74,9 @@ public class PlayerInventory : MonoBehaviour
             newItem.itemID = currentStashSize;
             newItem.itemName = item.itemName;
             newItem.itemWeight = item.itemWeight;
+            newItem.itemDescription = item.itemDescription;
+            newItem.itemIcon = item.itemIcon;   
+
             inventoryItems.Add(newItem);
             currentWeight += item.itemWeight;
             Debug.Log("Added " + item.itemName + " to inventory.");

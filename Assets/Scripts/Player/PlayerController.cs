@@ -50,7 +50,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float currentSpeed;
     [SerializeField] private float currentAcceleration;
 
-
+    [Header("Camera Settings")]
+    [SerializeField] private float cameraSmoothVelocity;
+    [SerializeField] private float cameraTargetY;
 
     [Header("Boole skurwole")]
     [SerializeField] private bool isDead = false;
@@ -74,6 +76,9 @@ public class PlayerController : MonoBehaviour
     private Vector2 cameraRotation;
     private Rigidbody playerRagdoll;
     private GameObject deathCameraPivot;
+    private PlayerInventory playerInventory;
+
+
 
 
     private void Awake()
@@ -110,6 +115,7 @@ public class PlayerController : MonoBehaviour
             HandleJumping();
             HandleGrounded();
             HandleMovement();
+            HandleCrouching();
 
         }
 
@@ -182,6 +188,7 @@ public class PlayerController : MonoBehaviour
                 targetSpeed = crouchSpeed;
                 currentWalkState = "Crouch";
                 isCrouching = true;
+                
             }
             else
             {
@@ -332,6 +339,19 @@ public class PlayerController : MonoBehaviour
         playerController.Move(moveVector * Time.deltaTime);
     }
 
+    void HandleCrouching()
+    {
+        float targetHeight = isCrouching ? 1f : 1.7f;
+        float targetCenterY = isCrouching ? 0.5f : 0f;
+        cameraTargetY = isCrouching ? 0.274f : 0.758f;
+        playerController.height = Mathf.Lerp(playerController.height, targetHeight, 10f * Time.deltaTime);
+        
+        Vector3 camPos = playerCamera.transform.localPosition;
+        camPos.y = Mathf.SmoothDamp(camPos.y, cameraTargetY, ref cameraSmoothVelocity, 0.08f);
+        playerCamera.transform.localPosition = camPos;
+
+    }
+
     void DebugShit()
     {
         if(Input.GetKeyDown(KeyCode.P))
@@ -345,6 +365,7 @@ public class PlayerController : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(playerGroundCheck.transform.position, groundCheckRadius);
+        Gizmos.DrawRay(playerGroundCheck.transform.position, Vector3.down * 1f);
     }
 
 }
